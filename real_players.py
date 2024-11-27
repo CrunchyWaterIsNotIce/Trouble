@@ -1,10 +1,10 @@
 import pygame
+import os
 # Display is 800 x 800
 
-# players = {
-#     "Player 1":
-# }
+green_piece_path = os.path.join("assets", "green_piece.png")
+piece = pygame.image.load(green_piece_path)
 
 
 def display_player_pieces(w):
-    pygame.draw.circle(w, "red", (125, 125), 15)
+    w.blit(piece, (125, 125))
