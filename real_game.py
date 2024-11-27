@@ -19,7 +19,7 @@ def game(w, c): # w - window, c - clock
         if event == "CLOSE":
             running = False
         # if event == "MOUSERELEASE" and game_state == "Choosing Player":
-            
+         
         w.fill("white")
         display_board(w)
         display_player_pieces(w)
