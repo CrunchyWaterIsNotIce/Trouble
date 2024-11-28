@@ -1,6 +1,6 @@
 import pygame
 
-from real_game import game
+from real_game import TroubleGame
 
 def main():
     pygame.init()
@@ -8,7 +8,8 @@ def main():
     window = pygame.display.set_mode((800, 800))
     clock = pygame.time.Clock()
     
-    game(window, clock)
+    game = TroubleGame(window, clock)
+    game.run()
     
 
     pygame.quit()

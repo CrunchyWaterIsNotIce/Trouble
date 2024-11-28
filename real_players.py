@@ -12,7 +12,6 @@ green_piece = pygame.image.load(green_piece_path)
 red_piece = pygame.image.load(red_piece_path)
 yellow_piece = pygame.image.load(yellow_piece_path)
 
-
 players = {
     "Player 1" : [blue_piece, # Piece Image
                 [pygame.Vector2(640, 70), pygame.Vector2(640, 70)], # Piece 1 : Current Position - 0, Reset Position
@@ -39,7 +38,6 @@ players = {
                 [pygame.Vector2(60, 130), pygame.Vector2(60, 130)]
                 ]
 }
-
 
 def display_player_pieces(w):
     for player in players:
