@@ -1,6 +1,6 @@
 import pygame
 
-from real_game import TroubleGame
+from game import TroubleGame
 
 def main():
     pygame.init()

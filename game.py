@@ -1,8 +1,8 @@
 import pygame
 import random
 # Display is 800 x 800
-from real_board import display_board
-from real_players import display_player_pieces, toggle_selectable_piece
+from board import display_board
+from players import display_player_pieces, toggle_selectable_piece
 
 class TroubleGame:
     def __init__(self, window, clock):
