@@ -6,7 +6,7 @@ import os
 board_path = os.path.join("assets", "trouble_board.png")
 
 # Loading Assets
-board = pygame.transform.scale_by(pygame.image.load(board_path), 2.95)
+board = pygame.transform.scale_by(pygame.image.load(board_path), 2.96)
 
 def display_board(window):
     window.blit(board, (50, 50))
