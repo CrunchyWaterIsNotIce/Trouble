@@ -24,10 +24,10 @@ highlighted_yellow_piece = pygame.image.load(highlight_y_piece_path)
 
 players = {
     1 : [[blue_piece, highlighted_blue_piece], # Piece Image - Index 0
-                [pygame.Vector2(640, 70), pygame.Vector2(640, 70), False], # Piece 1 - Index 1 -> [Current Position, Reset Position, selectable]
-                [pygame.Vector2(660, 90), pygame.Vector2(660, 90), False], # Piece 2 - Index 2 etc.
-                [pygame.Vector2(680, 110), pygame.Vector2(640, 110), False],
-                [pygame.Vector2(700, 130), pygame.Vector2(700, 130), False]
+                [pygame.Vector2(640, 50), pygame.Vector2(640, 50), False], # Piece 1 - Index 1 -> [Current Position, Reset Position, selectable]
+                [pygame.Vector2(660, 70), pygame.Vector2(660, 70), False], # Piece 2 - Index 2 etc.
+                [pygame.Vector2(680, 90), pygame.Vector2(640, 90), False],
+                [pygame.Vector2(700, 110), pygame.Vector2(700, 110), False]
                 ],
     2 : [[red_piece, highlighted_red_piece],
                 [pygame.Vector2(700, 630), pygame.Vector2(700, 630), False],
@@ -42,10 +42,10 @@ players = {
                 [pygame.Vector2(120, 690), pygame.Vector2(120, 690), False], 
                 ],
     4 : [[yellow_piece, highlighted_yellow_piece],
-                [pygame.Vector2(120, 70), pygame.Vector2(120, 70), False],
-                [pygame.Vector2(100, 90), pygame.Vector2(100, 90), False],
-                [pygame.Vector2(80, 110), pygame.Vector2(80, 110), False],
-                [pygame.Vector2(60, 130), pygame.Vector2(60, 130), False]
+                [pygame.Vector2(120, 50), pygame.Vector2(120, 50), False],
+                [pygame.Vector2(100, 70), pygame.Vector2(100, 70), False],
+                [pygame.Vector2(80, 90), pygame.Vector2(80, 90), False],
+                [pygame.Vector2(60, 110), pygame.Vector2(60, 110), False]
                 ]
 }
 
