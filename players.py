@@ -13,7 +13,7 @@ yellow_piece_path = os.path.join("assets", "yellow_piece.png")
 highlight_y_piece_path = os.path.join("assets", "highlighted_yellow_piece.png")
 
 # Loading Assets
-blue_piece = pygame.transform.scale_by(pygame.image.load(blue_piece_path), 1.2)
+blue_piece = pygame.image.load(blue_piece_path)
 highlighted_blue_piece = pygame.image.load(hightlight_b_piece_path)
 green_piece = pygame.image.load(green_piece_path)
 highlighted_green_piece = pygame.image.load(highlight_g_piece_path)

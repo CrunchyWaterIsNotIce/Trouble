@@ -87,7 +87,7 @@ class TroubleGame:
                         toggle_selectable_piece(self.current_player_number)
                     # Moves pieces
                     # what if you dont move a piece out of home?
-                    # what if there is already a piece 
+                    # what if there is already a piece
                     
                     
                     
