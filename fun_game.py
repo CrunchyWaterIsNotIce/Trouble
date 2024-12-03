@@ -18,6 +18,7 @@ pygame.init()
 # ---Required Properties---
 window = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
+pygame.display.set_caption("Trouble")
 running = True
 
 # ---File Path for Images---
@@ -38,6 +39,7 @@ dice_five_path = os.path.join("assets", "dice_five.png")
 dice_six_path = os.path.join("assets", "dice_six.png")
 
 board_path = os.path.join("assets", "trouble_board.png")
+question_path = os.path.join("assets", "question_mark.png")
 
 # ---Image Assets---
 blue_piece = pygame.image.load(blue_piece_path).convert_alpha()
@@ -57,38 +59,41 @@ dice_five = pygame.image.load(dice_five_path).convert_alpha()
 dice_six = pygame.image.load(dice_six_path).convert_alpha()
 
 board = pygame.transform.scale_by(pygame.image.load(board_path), 2.95).convert_alpha()
+question_mark = pygame.image.load(question_path).convert_alpha()
 
 # ---Game Properties---
 players = {
     1 : [[blue_piece, highlighted_blue_piece], #0 [Piece Image, Highlighted Piece Image]
-                [pygame.Vector2(640, 60), pygame.Vector2(640, 60), False, 0], #1 Piece 1 - [Current Position, Reset Position, Selectable, Moves]
-                [pygame.Vector2(660, 80), pygame.Vector2(660, 80), False, 0], #2 Piece 2 - etc.
-                [pygame.Vector2(680, 100), pygame.Vector2(680, 100), False, 0], #3 Piece 3 - etc.
-                [pygame.Vector2(700, 120), pygame.Vector2(700, 120), False, 0], #4 Piece 4 - etc.
+                [pygame.Vector2(640, 60), pygame.Vector2(640, 60), False, 0, False], #1 Piece 1 - [Current Position, Reset Position, Selectable, Moves, Finish Spot]
+                [pygame.Vector2(660, 80), pygame.Vector2(660, 80), False, 0, False], #2 Piece 2 - etc.
+                [pygame.Vector2(680, 100), pygame.Vector2(680, 100), False, 0, False], #3 Piece 3 - etc.
+                [pygame.Vector2(700, 120), pygame.Vector2(700, 120), False, 0, False], #4 Piece 4 - etc.
                 0 #5 Current Move
                 ],
     2 : [[red_piece, highlighted_red_piece],
-                [pygame.Vector2(700, 630), pygame.Vector2(700, 630), False, 0],
-                [pygame.Vector2(680, 650), pygame.Vector2(680, 650), False, 0],
-                [pygame.Vector2(660, 670), pygame.Vector2(660, 670), False, 0], 
-                [pygame.Vector2(640, 690), pygame.Vector2(640, 690), False, 0], 
+                [pygame.Vector2(700, 630), pygame.Vector2(700, 630), False, 0, False],
+                [pygame.Vector2(680, 650), pygame.Vector2(680, 650), False, 0, False],
+                [pygame.Vector2(660, 670), pygame.Vector2(660, 670), False, 0, False], 
+                [pygame.Vector2(640, 690), pygame.Vector2(640, 690), False, 0, False], 
                 0
                 ],
     3 : [[green_piece, highlighted_green_piece],
-                [pygame.Vector2(60, 630), pygame.Vector2(60, 630), False, 0],
-                [pygame.Vector2(80, 650), pygame.Vector2(80, 650), False, 0],
-                [pygame.Vector2(100, 670), pygame.Vector2(100, 670), False, 0], 
-                [pygame.Vector2(120, 690), pygame.Vector2(120, 690), False, 0], 
+                [pygame.Vector2(60, 630), pygame.Vector2(60, 630), False, 0, False],
+                [pygame.Vector2(80, 650), pygame.Vector2(80, 650), False, 0, False],
+                [pygame.Vector2(100, 670), pygame.Vector2(100, 670), False, 0, False], 
+                [pygame.Vector2(120, 690), pygame.Vector2(120, 690), False, 0, False], 
                 0
                 ],
     4 : [[yellow_piece, highlighted_yellow_piece],
-                [pygame.Vector2(120, 60), pygame.Vector2(120, 60), False, 0],
-                [pygame.Vector2(100, 80), pygame.Vector2(100, 80), False, 0],
-                [pygame.Vector2(80, 100), pygame.Vector2(80, 100), False, 0],
-                [pygame.Vector2(60, 120), pygame.Vector2(60, 120), False, 0],
+                [pygame.Vector2(120, 60), pygame.Vector2(120, 60), False, 0, False],
+                [pygame.Vector2(100, 80), pygame.Vector2(100, 80), False, 0, False],
+                [pygame.Vector2(80, 100), pygame.Vector2(80, 100), False, 0, False],
+                [pygame.Vector2(60, 120), pygame.Vector2(60, 120), False, 0, False],
                 0
                 ]
 }
+
+
 
 dice = [dice_one, dice_two, dice_three, dice_four, dice_five, dice_six]
 
@@ -107,10 +112,15 @@ home_coords = {
     3 : [pygame.Vector2(278, 475), pygame.Vector2(243, 510), pygame.Vector2(208, 546), pygame.Vector2(172, 583)], # Green
     4 : [pygame.Vector2(278, 277), pygame.Vector2(243, 241), pygame.Vector2(207, 205), pygame.Vector2(173, 170)], # Yellow
 }
+
+text_instructions = [
+    ""
+]
+
 game_state = "Choosing Starting Player"
 current_player = 1
 toggle_instructions = False
-
+winner = None
 # ---Game Functions---
 ## Game Methods
 def roll_dice():
@@ -123,7 +133,39 @@ def roll_dice():
 
 def display_instructions(w):
     if toggle_instructions:
-        w.fill("white")
+        pygame.draw.rect(w, "grey", pygame.Rect(50, 50, 700, 500))
+        pygame.draw.rect(w, "black", pygame.Rect(50, 50, 700, 500), 2)  # Border
+        
+        instructions = [
+            "Welcome to the game of Trouble!",
+            "Goal: Be the first player to move all four pieces",
+            "from the home base to the finish spots",
+            "",
+            "Rules:",
+            "1. You must roll a 6 to move a piece out of the home base.",
+            "2. On rolling a 6, you get another turn.",
+            "3. If you land on an opponent's piece, their piece goes",
+            "   back to their home base.",
+            "4. You must roll the exact number to move a piece",
+            "   into the finish spots.",
+            "",
+            "Click the dice to roll on your turn.",
+            "Click the highlighted piece to move it based on your roll."
+        ]
+        
+        y_offset = 70  # Starting position for text
+        for line in instructions:
+            rendered_text = pygame.font.Font(None, 28).render(line, True, "black")
+            w.blit(rendered_text, (100, y_offset))
+            y_offset += 30
+
+
+    w.blit(question_mark, pygame.Vector2(0, 0))
+
+def save_winner(player_number):
+    with open("winners.txt", "a") as file:
+        file.write(f"Player {player_number}\n")
+
 
 ## Board Methods
 def display_board(w):
@@ -137,7 +179,7 @@ def display_board(w):
 def display_dice(w):
     if players[current_player][5] > 0:  # Check if a dice roll exists for the current player
         dice_index = players[current_player][5] - 1
-        w.blit(dice[dice_index], (350, 300))  # Display dice at the center
+        w.blit(dice[dice_index], (375, 375))  # Display dice at the center
 
 ## Player Methods
 def display_players(w): # w -> Window
@@ -173,6 +215,14 @@ def next_player(curr): # curr -> Current Player
         return 1
     return curr + 1
 
+def check_win_condition():
+    home_positions = home_coords[current_player]
+    for piece_num in range(1, 5):
+        if players[current_player][piece_num][0] not in home_positions:  # If any piece isn't in home
+            return False
+    return True
+
+
 # ---Game Loop---
 while running:
     # ---Event Handling---
@@ -183,114 +233,130 @@ while running:
             mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
             # players[current_player][1][0] = mouse_pos
             # print(mouse_pos)
-            if game_state == "Choosing Starting Player":
-                
-                    
-                if players[4][5] == 0: # Checking if every player hasn't rolled yet(If player 4's current move is 0)
-                    if players[current_player][5] == 0:
-                        players[current_player][5] = roll_dice() # Then assign their current move from rolling a dice
-                    else:
-                        current_player = next_player(current_player) # Increment current_player
-                else: # Checking if every player HAS rolled (If player 4's current move is not 0, meaning all players have rolled)
-                    for player_num in players:
-                        players[player_num][5] = 0 # Resets current moves of all players to start the game
-                    
-                    game_state = "Player's Turn"
-                
-                if players[4][5] > 0: # AUTOMATICALLY CHECK
-                    for player_num in players: # Loops through all current moves(roll) of players and finds the player with the largest roll
-                        if players[player_num][5] > players[current_player][5]: # If it(looping player) is higher than the current_player, then replace
-                            current_player = player_num
-                    
-            if game_state == "Player's Turn":
-                if players[current_player][5] == 0: # If players current move is 0
-                    roll = roll_dice()
-                    players[current_player][5] = roll
-                    
-                    if roll == 6:
-                        for piece_num in range(1, 5):  # Check for pieces at home
-                            if players[current_player][piece_num][0] == players[current_player][piece_num][1]:
-                                players[current_player][piece_num][2] = True  # Make a home piece selectable
-                                break
+            if mouse_pos.distance_to(pygame.Vector2(0, 0)) < 40:
+                if toggle_instructions:
+                    toggle_instructions = False
                 else:
-                    all_pieces_at_home = all(players[current_player][piece_num][0] == players[current_player][piece_num][1] for piece_num in range(1, 5))  
+                    toggle_instructions = True
+                
+            elif not toggle_instructions:
+                if game_state == "Choosing Starting Player":
+                    
                         
-                    if all_pieces_at_home and roll != 6: # Beginning of Game
-                        players[current_player][5] = 0  # Reset current move
-                        current_player = next_player(current_player)
-                    else:
-                        for piece_num in range(1, 5):
-                            piece_pos = players[current_player][piece_num][0]
-                            reset_pos = players[current_player][piece_num][1]
-                            selectable = players[current_player][piece_num][2]
-                            
+                    if players[4][5] == 0: # Checking if every player hasn't rolled yet(If player 4's current move is 0)
+                        if players[current_player][5] == 0:
+                            players[current_player][5] = roll_dice() # Then assign their current move from rolling a dice
+                        else:
+                            current_player = next_player(current_player) # Increment current_player
+                    else: # Checking if every player HAS rolled (If player 4's current move is not 0, meaning all players have rolled)
+                        for player_num in players:
+                            players[player_num][5] = 0 # Resets current moves of all players to start the game
+                        
+                        game_state = "Player's Turn"
+                    
+                    if players[4][5] > 0: # AUTOMATICALLY CHECK
+                        for player_num in players: # Loops through all current moves(roll) of players and finds the player with the largest roll
+                            if players[player_num][5] > players[current_player][5]: # If it(looping player) is higher than the current_player, then replace
+                                current_player = player_num
+                        
+                if game_state == "Player's Turn":
 
-                            if selectable and mouse_pos.distance_to(piece_pos) < 40:  # Check if a selectable piece was clicked
-                                current_roll = players[current_player][5]
+                    if players[current_player][5] == 0: # If players current move is 0
+                        for piece_num in range(1, 5):
+                            if players[current_player][piece_num][0] != players[current_player][piece_num][1] and not players[current_player][piece_num][4]:  # If not at home
+                                players[current_player][piece_num][2] = True
+                                
+                                
+                        roll = roll_dice()
+                        players[current_player][5] = roll
+                        
+                        if roll == 6:
+                            for piece_num in range(1, 5):  # Check for pieces at home
+                                if players[current_player][piece_num][0] == players[current_player][piece_num][1]:
+                                    players[current_player][piece_num][2] = True  # Make a home piece selectable
+                                    break
+                    else:
+                        all_pieces_at_home = all(players[current_player][piece_num][0] == players[current_player][piece_num][1] for piece_num in range(1, 5))  
+                            
+                        if all_pieces_at_home and roll != 6: # Beginning of Game
+                            players[current_player][5] = 0  # Reset current move
+                            current_player = next_player(current_player)
+                        else:
+                            for piece_num in range(1, 5):
+                                piece_pos = players[current_player][piece_num][0]
+                                reset_pos = players[current_player][piece_num][1]
+                                selectable = players[current_player][piece_num][2]
                                 
 
-                                if piece_pos == reset_pos:  # Move piece out of home base
-                                    new_pos = board_coords[(4 + (current_player - 1) * 7) % len(board_coords)] # Starting position
-                                    players[current_player][piece_num][3] += 1 # Adds to Total Moves  
-                                else: 
-                                    if players[current_player][piece_num][3] + current_roll > 28: # Checks if piece does a full loop
-                                        potential_home_index = players[current_player][piece_num][3] % 28
-                                        occupied_home_index = -1
+                                if selectable and mouse_pos.distance_to(piece_pos) < 40:  # Check if a selectable piece was clicked
+                                    current_roll = players[current_player][5]
+                                    
+
+                                    if piece_pos == reset_pos:  # Move piece out of home base
+                                        new_pos = board_coords[(4 + (current_player - 1) * 7) % len(board_coords)] # Starting position
+                                        players[current_player][piece_num][3] += 1 # Adds to Total Moves  
+                                    else: 
+                                        if players[current_player][piece_num][3] + current_roll > 28: # Checks if piece does a full loop
+                                            potential_home_index = players[current_player][piece_num][3] % 29
+                                            occupied_home_index = -1
+                                            
+                                            for other_piece_num in range(1, 5): # Finds the latest occupied spot in finish line
+                                                if other_piece_num != piece_num:
+                                                    for coord in range(4):
+                                                        if players[current_player][other_piece_num][0] == home_coords[current_player][coord]:
+                                                            occupied_home_index = coord
+                                                            
+                                            if occupied_home_index != -1: # If there ARE spots occupied in finish line
+                                                # Go to the next spot
+                                                occupied_home_index += 1
+                                            else:
+                                                # Start spot
+                                                occupied_home_index = 3
+                                            
+                                            if potential_home_index == occupied_home_index: # Check if the potential index rolled is exactly in the finish line
+                                                new_pos = home_coords[current_player][occupied_home_index] # Piece goes into finish line
+                                                players[current_player][piece_num][2] = False
+                                                players[current_player][piece_num][4] = True
+                                            else:
+                                                new_pos = piece_pos # Piece can't move
+
+                                                
+                                        else: # Checks if piece is just moving
+                                            next_index = (board_coords.index(piece_pos) + current_roll) % len(board_coords)
+                                            new_pos = board_coords[next_index] # Gets New Position
+                                            players[current_player][piece_num][3] += current_roll # Adds to Total Moves
                                         
-                                        for other_piece_num in range(1, 5): # Finds the latest occupied spot in finish line
-                                            if other_piece_num != piece_num:
-                                                for coord in range(4):
-                                                    if players[current_player][other_piece_num][0] == home_coords[current_player][coord]:
-                                                        occupied_home_index = coord
-                                                        
-                                        if occupied_home_index != -1: # If there ARE spots occupied in finish line
-                                            # Go to the next spot
-                                            occupied_home_index += 1
-                                        else:
-                                            # Start spot
-                                            occupied_home_index = 0
                                         
-                                        if potential_home_index == occupied_home_index: # Check if the potential index rolled is exactly in the finish line
-                                            new_pos = home_coords[current_player][occupied_home_index] # Piece goes into finish line
+                                        
+                                        
+                                    collided, piece = check_player_collisions(new_pos, current_player) # Checks if position on board is occupied and is selectable(to not touch finish line pieces)
+                                    if collided: # If so, the initial piece at the position goes back home
+                                        if piece[0] == current_player:
                                             players[current_player][piece_num][2] = False
                                         else:
-                                            new_pos = piece_pos # Piece can't move
-
-                                            
-                                    else: # Checks if piece is just moving
-                                        next_index = (board_coords.index(piece_pos) + current_roll) % len(board_coords)
-                                        new_pos = board_coords[next_index] # Gets New Position
-                                        players[current_player][piece_num][3] += current_roll # Adds to Total Moves
-                                    
-                                    
-                                # Not needed? v
-                                if current_roll == 6: ## EDGE CASE - If a player chooses to move a piece on board instead of a piece out of home, deselect all pieces at home
-                                    for other_piece_num in range(1, 5):  # Check for pieces at home
-                                        if players[current_player][other_piece_num][0] == players[current_player][other_piece_num][1] and other_piece_num != piece_num:
-                                            players[current_player][other_piece_num][2] = False
-                                    
-                                    
-                                collided, piece = check_player_collisions(new_pos, current_player) # Checks if position on board is occupied and is selectable(to not touch finish line pieces)
-                                if collided: # If so, the initial piece at the position goes back home
-                                    if piece[0] == current_player:
-                                        players[current_player][piece_num][2] = False
+                                            players[piece[0]][piece[1]][0] = players[piece[0]][piece[1]][1] # Resets Position
+                                            players[piece[0]][piece[1]][2] = False # Unselected
+                                            players[piece[0]][piece[1]][3] = 0 # Total moves is now 0
+                                            # Update piece position and reset selectable
+                                            players[current_player][piece_num][0] = new_pos
+                                            players[current_player][5] = 0  # Reset current move
+                                            if current_roll != 6:
+                                                current_player = next_player(current_player)
+                                            break  # Only move one piece per click
                                     else:
-                                        players[piece[0]][piece[1]][0] = players[piece[0]][piece[1]][1] # Resets Position
-                                        players[piece[0]][piece[1]][2] = False # Unselected
-                                        players[piece[0]][piece[1]][3] = 0 # Total moves is now 0
-                                         # Update piece position and reset selectable
+
+                                        # Update piece position and reset selectable
                                         players[current_player][piece_num][0] = new_pos
                                         players[current_player][5] = 0  # Reset current move
-                                        current_player = next_player(current_player)
+                                        if current_roll != 6:
+                                            current_player = next_player(current_player)
                                         break  # Only move one piece per click
-                                else:
+                    if check_win_condition():
+                        game_state = "Win"
+                        winner = current_player
+                        save_winner(winner)
 
-                                    # Update piece position and reset selectable
-                                    players[current_player][piece_num][0] = new_pos
-                                    players[current_player][5] = 0  # Reset current move
-                                    current_player = next_player(current_player)
-                                    break  # Only move one piece per click
-                            
+                                
                             
                                     
                        
@@ -317,13 +383,28 @@ while running:
         if players[current_player][5] == 0:  # Player needs to roll
             message = f"Player {current_player}'s turn!"
             message_two = "Click to roll the dice."
+            center = (300, 25)
         else:
             message = f"Player {current_player} rolled a {players[current_player][5]}!"
             message_two = "Click on the highlighted piece to move. If they are none, next!"
+            center = (50, 25)
         text = pygame.font.Font(None, 36).render(message, True, (0, 0, 0))
         text_two = pygame.font.Font(None, 36).render(message_two, True, (0, 0, 0))
-        window.blit(text, (100, 0))
-        window.blit(text_two, (50, 25))
+        window.blit(text, (305, 0))
+        window.blit(text_two, center)
+    elif game_state == "Win":
+        message = f"Player {winner} wins the game!"
+        text = pygame.font.Font(None, 48).render(message, True, (0, 255, 0))
+        window.fill("grey")
+        display_board(window)
+        window.blit(text, (200, 350))
+        
+        
+        pygame.display.flip()
+        pygame.time.wait(5000)
+        running = False
+        
+    display_instructions(window)
 
     
     pygame.display.flip()
